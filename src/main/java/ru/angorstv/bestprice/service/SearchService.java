@@ -9,7 +9,7 @@ import ru.angorstv.bestprice.harvester.WildberriesHarvester;
 import ru.angorstv.bestprice.repository.ProductRepository;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -29,9 +29,9 @@ public class SearchService {
 
     @Transactional
     public List<Product> search(String value) throws JsonProcessingException {
-        List<Product> products = new ArrayList<>();
+        List<Product> products = new LinkedList<>();
         products.addAll(wildberriesHarvester.getProducts(value));
-        //products.addAll(aliHarvester.getProducts(value));
+        products.addAll(aliHarvester.getProducts(value));
         products.addAll(ozonHarvester.getProducts(value));
         productRepository.saveAll(products);
         List<Product> resultProducts = productRepository.findValue(value);

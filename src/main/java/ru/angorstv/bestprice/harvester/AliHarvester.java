@@ -1,6 +1,6 @@
 package ru.angorstv.bestprice.harvester;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -8,29 +8,36 @@ import org.springframework.stereotype.Component;
 import ru.angorstv.bestprice.entity.Product;
 import ru.angorstv.bestprice.service.WebDriverFabric;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class AliHarvester implements Harvester {
 
     @Override
-    public List<Product> getProducts(String value) throws JsonProcessingException {
-        List<Product> products = new ArrayList<>();
+    public List<Product> getProducts(String value) {
+        List<Product> products = new LinkedList<>();
         WebDriver driver = WebDriverFabric.getDriver();
-        driver.get("https://aliexpress.ru/wholesale?catId=&SearchText=" + value);
-        products.addAll(getFromPage(driver));
-        for (int i = 0; i < 10; i++) {
-            WebElement button = driver.findElement(By.className("SearchPagination_Button__button__177je"));
-            button.click();
+        try {
+            driver = WebDriverFabric.getDriver();
+            driver.get("https://aliexpress.ru/wholesale?catId=&SearchText=" + value);
             products.addAll(getFromPage(driver));
+            for (int i = 0; i < 10; i++) {
+                WebElement button = driver.findElement(By.className("SearchPagination_Button__button__177je"));
+                button.click();
+                products.addAll(getFromPage(driver));
+            }
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage());
+        } finally {
+            driver.close();
         }
-        driver.close();
         return products;
     }
 
     private List<Product> getFromPage(WebDriver driver) {
-        List<Product> products = new ArrayList<>();
+        List<Product> products = new LinkedList<>();
         List<WebElement> webElements = driver.findElements(By.className("product-snippet_ProductSnippet__description__tusfnx"));
         for (WebElement element : webElements) {
             Product product = new Product();
