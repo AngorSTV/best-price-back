@@ -1,7 +1,10 @@
 package ru.angorstv.bestprice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.angorstv.bestprice.common.SearchRequest;
 import ru.angorstv.bestprice.entity.Product;
 import ru.angorstv.bestprice.harvester.AliHarvester;
 import ru.angorstv.bestprice.harvester.OzonHarvester;
@@ -28,13 +31,25 @@ public class SearchService {
     }
 
     @Transactional
-    public List<Product> search(String value) throws JsonProcessingException {
+    public List<Product> search(SearchRequest searchRequest) throws JsonProcessingException {
         List<Product> products = new LinkedList<>();
-        products.addAll(wildberriesHarvester.getProducts(value));
-        products.addAll(aliHarvester.getProducts(value));
-        products.addAll(ozonHarvester.getProducts(value));
+        products.addAll(wildberriesHarvester.getProducts(searchRequest.getTerm()));
+        //products.addAll(aliHarvester.getProducts(searchRequest.getTerm()));
+        //products.addAll(ozonHarvester.getProducts(searchRequest.getTerm()));
         productRepository.saveAll(products);
-        List<Product> resultProducts = productRepository.findValue(value);
-        return resultProducts;
+        return getFromBd(searchRequest);
+    }
+
+    private List<Product> getFromBd(SearchRequest searchRequest) {
+        String term = searchRequest.getTerm();
+        int offset = searchRequest.getPage() * searchRequest.getPageSize();
+        int size = searchRequest.getPageSize();
+        String field;
+        switch (searchRequest.getSorting()) {
+            case RELEVANT -> field = "name";
+            case SHOP -> field = "shop";
+            default -> field = "price";
+        }
+        return productRepository.findByNamePaging(term, PageRequest.of(searchRequest.getPage(), searchRequest.getPageSize(), Sort.by(field).ascending())).getContent();
     }
 }

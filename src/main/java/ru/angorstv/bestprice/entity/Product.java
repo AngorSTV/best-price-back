@@ -1,7 +1,7 @@
 package ru.angorstv.bestprice.entity;
 
 import lombok.*;
-import ru.angorstv.bestprice.harvester.Shop;
+import ru.angorstv.bestprice.common.Shop;
 
 import javax.persistence.*;
 

@@ -1,4 +1,4 @@
-package ru.angorstv.bestprice.harvester;
+package ru.angorstv.bestprice.common;
 
 public enum Shop {
     WILDBERRIES,

@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Component;
+import ru.angorstv.bestprice.common.Shop;
 import ru.angorstv.bestprice.entity.Product;
 import ru.angorstv.bestprice.service.WebDriverFabric;
 
@@ -33,6 +34,7 @@ public class AliHarvester implements Harvester {
         } finally {
             driver.close();
         }
+        log.info("AliHarvester found " + products.size() + " products.");
         return products;
     }
 

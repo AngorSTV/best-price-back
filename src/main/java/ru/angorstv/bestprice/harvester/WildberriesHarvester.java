@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import ru.angorstv.bestprice.common.Shop;
 import ru.angorstv.bestprice.entity.Product;
 
 import java.util.LinkedList;
@@ -42,6 +43,7 @@ public class WildberriesHarvester implements Harvester {
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
         }
+        log.info("WildberriesHarvester found " + products.size() + " products.");
         return products;
     }
 

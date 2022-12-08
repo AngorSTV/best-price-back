@@ -8,7 +8,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.angorstv.bestprice.common.Direct;
+import ru.angorstv.bestprice.common.SearchRequest;
+import ru.angorstv.bestprice.common.Sorting;
+import ru.angorstv.bestprice.entity.Product;
 import ru.angorstv.bestprice.service.SearchService;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -24,8 +30,12 @@ public class SearchController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<String> search(@RequestParam String value) throws JsonProcessingException {
-        String result = objectMapper.writeValueAsString(searchService.search(value));
-        return ResponseEntity.ok(result);
+    public ResponseEntity<List<Product>> search(@RequestParam String term,
+                                                @RequestParam(required = false) Sorting sort,
+                                                @RequestParam(required = false) Direct direct,
+                                                @RequestParam(required = false) Integer page,
+                                                @RequestParam(required = false) Integer size) throws JsonProcessingException {
+        SearchRequest searchRequest = new SearchRequest(term, sort, direct, page, size);
+        return ResponseEntity.ok(searchService.search(searchRequest));
     }
 }
