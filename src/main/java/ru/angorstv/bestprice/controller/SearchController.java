@@ -1,7 +1,6 @@
 package ru.angorstv.bestprice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +20,9 @@ import ru.angorstv.bestprice.service.SearchService;
 public class SearchController {
     
     private final SearchService searchService;
-    private final ObjectMapper objectMapper;
     
-    public SearchController(SearchService searchService, ObjectMapper objectMapper) {
+    public SearchController(SearchService searchService) {
         this.searchService = searchService;
-        this.objectMapper = objectMapper;
     }
     
     @GetMapping("/search")
