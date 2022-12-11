@@ -5,39 +5,31 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import ru.angorstv.bestprice.common.Shop;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
 @Setter
-@Entity
-@IdClass(ProductId.class)
-@Table(name = "product")
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(indexName = "product")
 public class Product {
     @Id
     private String originalId;
-    
-    @Id
-    @Enumerated(EnumType.STRING)
     private Shop shop;
-    
-    @Column(length = 2048)
     private String name;
     private String brand;
     private Integer price;
-    @Column(length = 2048)
     private String url;
     private String description;
     private String imageUrl;
+    @Field(type = FieldType.Date)
+    private LocalDateTime lastUpDate;
 }
 

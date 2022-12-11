@@ -11,9 +11,7 @@ import ru.angorstv.bestprice.entity.Product;
 import ru.angorstv.bestprice.harvester.AliHarvester;
 import ru.angorstv.bestprice.harvester.OzonHarvester;
 import ru.angorstv.bestprice.harvester.WildberriesHarvester;
-import ru.angorstv.bestprice.repository.ProductRepository;
 
-import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,22 +21,19 @@ public class SearchService {
     private final WildberriesHarvester wildberriesHarvester;
     private final AliHarvester aliHarvester;
     private final OzonHarvester ozonHarvester;
-    private final ProductRepository productRepository;
     
-    public SearchService(WildberriesHarvester wildberriesHarvester, AliHarvester aliHarvester, OzonHarvester ozonHarvester, ProductRepository productRepository) {
+    public SearchService(WildberriesHarvester wildberriesHarvester, AliHarvester aliHarvester, OzonHarvester ozonHarvester) {
         this.wildberriesHarvester = wildberriesHarvester;
         this.aliHarvester = aliHarvester;
         this.ozonHarvester = ozonHarvester;
-        this.productRepository = productRepository;
     }
     
-    @Transactional
     public Page<Product> search(SearchRequest searchRequest) throws JsonProcessingException {
         List<Product> products = new LinkedList<>();
         products.addAll(wildberriesHarvester.getProducts(searchRequest.getTerm()));
         //products.addAll(aliHarvester.getProducts(searchRequest.getTerm()));
         //products.addAll(ozonHarvester.getProducts(searchRequest.getTerm()));
-        productRepository.saveAll(products);
+        //productRepository.saveAll(products);
         return getFromBd(searchRequest);
     }
     
@@ -57,6 +52,6 @@ public class SearchService {
             sort = Sort.by(field).descending();
         }
         PageRequest pageRequest = PageRequest.of(searchRequest.getPage(), searchRequest.getPageSize(), sort);
-        return productRepository.findByNamePaging(term, pageRequest);
+        return null; //productRepository.findByNamePaging(term, pageRequest);
     }
 }
