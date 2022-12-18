@@ -12,20 +12,21 @@ import ru.angorstv.bestprice.entity.Product;
 import ru.angorstv.bestprice.service.WebDriverFabric;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
 @Component
 public class OzonHarvester implements Harvester {
-
+    
     private static final String envelopeTag = "kt4";
     private static final String cellTag = "kr3";
     private static final String urlTag = "tile-hover-target k8n";
     private static final String priceTag = "_32-a9";
     private static final String nameTag = "tsBodyL";
     private static final String waitTag = "tsBodyM";
-
+    
     @Override
     public List<Product> getProducts(String value) {
         List<Product> products = new LinkedList<>();
@@ -42,27 +43,28 @@ public class OzonHarvester implements Harvester {
         log.info("OzonHarvester found " + products.size() + " products.");
         return products;
     }
-
+    
     private List<Product> getFromPage(WebDriver driver) {
         List<Product> products = new LinkedList<>();
         WebElement envelope = new WebDriverWait(driver, Duration.ofSeconds(30))
-                .until(ExpectedConditions.visibilityOf(driver.findElement(By.className(envelopeTag))));
+            .until(ExpectedConditions.visibilityOf(driver.findElement(By.className(envelopeTag))));
         List<WebElement> webElements = envelope.findElements(By.className(cellTag));
         if (webElements.isEmpty()) {
             log.warn("Bad name of cell for OZON");
         } else {
             for (WebElement element : webElements) {
-                Product product = new Product();
-                product.setShop(Shop.OZON);
-                product.setUrl(element.findElement(By.tagName("a")).getAttribute("href"));
-
                 String rawPrice = element.findElement(By.className(priceTag)).getText();
                 String rawStr = rawPrice.replaceAll("[^0-9]+", "");
-                product.setPrice(Integer.valueOf(rawStr));
-
-                product.setName(element.findElement(By.className(nameTag))
+    
+                Product product = Product.builder()
+                    .shop(Shop.OZON)
+                    .url(element.findElement(By.tagName("a")).getAttribute("href"))
+                    .price(Integer.valueOf(rawStr))
+                    .name(element.findElement(By.className(nameTag))
                         .findElement(By.tagName("span"))
-                        .getText());
+                        .getText())
+                    .lastUpDate(LocalDateTime.now())
+                    .build();
                 products.add(product);
             }
         }

@@ -9,13 +9,14 @@ import ru.angorstv.bestprice.common.Shop;
 import ru.angorstv.bestprice.entity.Product;
 import ru.angorstv.bestprice.service.WebDriverFabric;
 
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
 @Component
 public class AliHarvester implements Harvester {
-
+    
     @Override
     public List<Product> getProducts(String value) {
         List<Product> products = new LinkedList<>();
@@ -37,16 +38,20 @@ public class AliHarvester implements Harvester {
         log.info("AliHarvester found " + products.size() + " products.");
         return products;
     }
-
+    
     private List<Product> getFromPage(WebDriver driver) {
         List<Product> products = new LinkedList<>();
         List<WebElement> webElements = driver.findElements(By.className("product-snippet_ProductSnippet__description__tusfnx"));
         for (WebElement element : webElements) {
-            Product product = new Product();
-            product.setShop(Shop.ALIEXPRESS);
-            product.setUrl(element.findElement(By.tagName("a")).getAttribute("href"));
             WebElement nameEl = element.findElement(By.className("product-snippet_ProductSnippet__name__tusfnx"));
-            product.setName(nameEl.getText());
+    
+            Product product = Product.builder()
+                .shop(Shop.ALIEXPRESS)
+                .url(element.findElement(By.tagName("a")).getAttribute("href"))
+                .name(nameEl.getText())
+                .lastUpDate(LocalDateTime.now())
+                .build();
+    
             List<WebElement> prices = element.findElements(By.className("product-snippet_ProductSnippet__block__tusfnx"));
             for (WebElement price : prices) {
                 String[] split = price.getAttribute("class").split(" ");
