@@ -21,15 +21,45 @@ import java.time.LocalDateTime;
 @Document(indexName = "product")
 public class Product {
     @Id
+    private String id;
+    
+    @Field(type = FieldType.Text)
     private String originalId;
+    
+    @Field(type = FieldType.Auto)
     private Shop shop;
+    
+    @Field(type = FieldType.Text)
     private String name;
+    
+    @Field(type = FieldType.Text)
     private String brand;
+    
+    @Field(type = FieldType.Integer)
     private Integer price;
+    
+    @Field(type = FieldType.Text)
     private String url;
+    
+    @Field(type = FieldType.Text)
     private String description;
+    
+    @Field(type = FieldType.Text)
     private String imageUrl;
+    
     @Field(type = FieldType.Date)
     private LocalDateTime lastUpDate;
+    
+    public static ProductBuilder builder() {
+        return new CustomProductBuilder();
+    }
+    
+    private static class CustomProductBuilder extends ProductBuilder {
+        @Override
+        public Product build() {
+            super.id(super.shop + "_" + super.originalId);
+            return super.build();
+        }
+    }
 }
 

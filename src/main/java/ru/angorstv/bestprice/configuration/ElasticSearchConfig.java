@@ -10,7 +10,7 @@ public class ElasticSearchConfig extends ElasticsearchConfiguration {
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
             .connectedTo("localhost:9200")
-            .withBasicAuth("elastic", "123456")
+            //.withBasicAuth("elastic", "123456")
             .build();
     }
 }

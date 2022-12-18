@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 import ru.angorstv.bestprice.common.Direct;
 import ru.angorstv.bestprice.common.SearchRequest;
@@ -11,6 +12,7 @@ import ru.angorstv.bestprice.entity.Product;
 import ru.angorstv.bestprice.harvester.AliHarvester;
 import ru.angorstv.bestprice.harvester.OzonHarvester;
 import ru.angorstv.bestprice.harvester.WildberriesHarvester;
+import ru.angorstv.bestprice.repository.ProductRepository;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,10 +24,16 @@ public class SearchService {
     private final AliHarvester aliHarvester;
     private final OzonHarvester ozonHarvester;
     
-    public SearchService(WildberriesHarvester wildberriesHarvester, AliHarvester aliHarvester, OzonHarvester ozonHarvester) {
+    private final ElasticsearchOperations operations;
+    
+    private final ProductRepository repository;
+    
+    public SearchService(WildberriesHarvester wildberriesHarvester, AliHarvester aliHarvester, OzonHarvester ozonHarvester, ElasticsearchOperations operations, ProductRepository repository) {
         this.wildberriesHarvester = wildberriesHarvester;
         this.aliHarvester = aliHarvester;
         this.ozonHarvester = ozonHarvester;
+        this.operations = operations;
+        this.repository = repository;
     }
     
     public Page<Product> search(SearchRequest searchRequest) throws JsonProcessingException {
@@ -34,7 +42,8 @@ public class SearchService {
         //products.addAll(aliHarvester.getProducts(searchRequest.getTerm()));
         //products.addAll(ozonHarvester.getProducts(searchRequest.getTerm()));
         //productRepository.saveAll(products);
-        return getFromBd(searchRequest);
+        repository.saveAll(products);
+        return null; //getFromBd(searchRequest);
     }
     
     private Page<Product> getFromBd(SearchRequest searchRequest) {
